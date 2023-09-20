@@ -196,7 +196,7 @@
 
                     const imgInfoDiv =
                         `<input type="text" class="form-control mb-2" name="img_title[]" placeholder="Image title" required>
-                    <textarea name="img_disc[]" class="form-control mb-2" maxlength="250" rows="2" id="product_desc" placeholder="Image short description" required> </textarea>`;
+                    <textarea name="img_disc[]" class="form-control mb-2" maxlength="250" rows="2" id="product_desc" placeholder="Image short description" required></textarea>`;
 
                     const imgInfo = document.createElement('div');
                     imgInfo.className = 'img-info pt-3';

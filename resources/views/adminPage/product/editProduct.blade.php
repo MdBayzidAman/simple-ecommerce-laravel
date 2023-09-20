@@ -72,7 +72,7 @@
 
                     const imgInfoDiv =
                         `<input type="text" class="form-control mb-2" name="img_title[]" placeholder="Image title" required>
-                    <textarea name="img_disc[]" class="form-control mb-2" maxlength="250" rows="2" id="product_desc" placeholder="Image short description" required> </textarea>`;
+                    <textarea name="img_disc[]" class="form-control mb-2" maxlength="250" rows="2" id="product_desc" placeholder="Image short description" required></textarea>`;
 
                     const imgInfo = document.createElement('div');
                     imgInfo.className = 'img-info pt-2';
@@ -204,19 +204,19 @@
                         <p class=" mb-1">You can select up to 5 image</p>
                         @foreach (json_decode($product_data->image) as $i=>$img_data)
                         <div class="selection-img">
-                            <label for="product_img{{$i+1}}" class="btn btn-success mb-1">Image {{$i+1}}</label>
-                            <input id="product_img{{$i+1}}" value="{{ $img_data->img }}" type="file" class="form-control mb-3 product_img dn" name="product_imgs[]" accept="image/*">
+                            <div class="d-flex align-center gap-2">
+                                <label for="product_img{{$i+1}}" class="btn btn-success mb-1">Image {{$i+1}}</label>
+                                <input id="product_img{{$i+1}}" type="file" class="form-control mb-3 product_img dn" name="product_imgs[]" accept="image/*">
+                                
+                                <input class="form-check-input" type="checkbox" name="delete_image[{{$i}}]" value="1" id="delete_image{{$i+1}}">
+                                <label class="form-check-label" for="delete_image{{$i+1}}">Delete this image</label>
+                                
+                            </div>
                             <div class="preview-container mb-2">
                                 <img src="{{ asset('asset/image/product/'.$img_data->img)}}" alt="" class="img-preview">
                                 <div class="img-info pt-1">
                                     <input value="{{$img_data->title}}" type="text" class="form-control mb-2" name="img_title[]" placeholder="Image title" required="">
                                     <textarea name="img_disc[]" class="form-control mb-2" maxlength="250" rows="2" id="product_desc" placeholder="Image short description" required="">{{$img_data->disc}}</textarea>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="delete_image[]" value="1" id="delete_image{{$i+1}}">
-                                    <label class="form-check-label" for="delete_image{{$i+1}}">
-                                        Delete this image
-                                    </label>
                                 </div>
                             </div>
                         </div>

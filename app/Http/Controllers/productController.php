@@ -166,45 +166,79 @@ class productController extends Controller
 
         $data = products::where('product_id', $id)->first();
         $decodeImg = json_decode($data->image, true);
-        // dd(json_decode($data->image, true));
-        // images save and array make
-        $imageNames = [];
-        if ($request->product_imgs != null) {
-            foreach ($request->product_imgs as $i => $img) {
-                if ($img != null) {
 
-                    if ($decodeImg[$i]['img']) {
-
-                        $destination = public_path('asset/image/product' . $decodeImg[$i]['img']);
-                        // delete existing file
-                        if (File::exists($destination)) {
-                            File::delete($destination);
-                        }
-                        $imageName = $random_string . date('dmy') . $i . '.' . $img->extension();
-                        $img->move(public_path('asset/image/product'), $imageName);
-
-                        $image = [
-                            'img' => $imageName,
-                            'title' => $request->img_title[$i],
-                            'disc' => $request->img_disc[$i],
-                        ];
-
-                        $imageNames[] = $image;
-                        $decodeImg[$i] = $image;
-                        $data->image = json_encode($decodeImg);
-                        $data->save();
-                    }
-
-                } else {
-                    # code...
+        // DELETE IMAGE
+        for ($i = 0; $i < 5; $i++) {
+            if (array_key_exists($i, $decodeImg) && !empty($request->delete_image[$i]) && $request->delete_image[$i]) {
+                
+                $destination = public_path('asset/image/product/' . $decodeImg[$i]['img']);
+                if (File::exists($destination)) {
+                    File::delete($destination);
                 }
+
+                unset($decodeImg[$i]);
+                $decodeImg = array_values($decodeImg);
+                $data->image = json_encode($decodeImg);
+                $data->save();
+            }else{}
+        }
+
+        for ($i = 0; $i < 5; $i++) {
+
+            // IMAGE CREATE UPDATE 
+            if (!empty($request->product_imgs[$i]) && $request->product_imgs[$i] != null) {
+                // UPDATE IMAGE
+                if (!empty($decodeImg[$i]['img'])) {
+
+                    $destination = public_path('asset/image/product/' . $decodeImg[$i]['img']);
+                    // delete existing file
+                    if (File::exists($destination)) {
+                        File::delete($destination);
+                    }
+                    $imageName = $random_string . date('dmy') . $i . '.' . $request->product_imgs[$i]->extension();
+                    $request->product_imgs[$i]->move(public_path('asset/image/product'), $imageName);
+
+                    $image = [
+                        'img' => $imageName,
+                        'title' => $request->img_title[$i],
+                        'disc' => $request->img_disc[$i],
+                    ];
+
+                    $decodeImg[$i] = $image;
+                    $data->image = json_encode($decodeImg);
+                    $data->save();
+
+                    // CREATE IMAGE
+                } elseif (empty($decodeImg[$i]['img'])) {
+                    $imageName = $random_string . date('dmy') . $i . '.' . $request->product_imgs[$i]->extension();
+                    $request->product_imgs[$i]->move(public_path('asset/image/product'), $imageName);
+
+                    $image = [
+                        'img' => $imageName,
+                        'title' => $request->img_title[$i],
+                        'disc' => $request->img_disc[$i],
+                    ];
+
+                    $decodeImg[] = $image;
+                    $data->image = json_encode($decodeImg);
+                    $data->save();
+                }
+
+                // UPDATE ONLY IMAGE INFO
+            } elseif (array_key_exists($i, $decodeImg) && !empty($request->img_title[$i])) {
+                $image = [
+                    'img' => $decodeImg[$i]['img'],
+                    'title' => $request->img_title[$i],
+                    'disc' => $request->img_disc[$i],
+                ];
+
+                $decodeImg[$i] = $image;
+                $data->image = json_encode($decodeImg);
+                $data->save();
+            } else {
             }
         }
 
-
-
-
-        // dd(json_encode($imageNames));
 
         $data->name = $request->product;
         $data->desc = $request->disc;
@@ -221,7 +255,7 @@ class productController extends Controller
         $data->delivery_cost = $request->delivery;
         $data->update();
 
-        return back()->with('success', 'Product successfully Updated');
+        return redirect( route('product'))->with('success', 'Product successfully Updated');
     }
 
     /**
